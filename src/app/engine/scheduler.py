@@ -42,8 +42,7 @@ def _clamp_to_window(local: dt.datetime, settings: Settings) -> dt.datetime:
         local = (local + dt.timedelta(days=1)).replace(hour=start_h, minute=0, second=0, microsecond=0)
     elif local.hour < start_h:
         local = local.replace(hour=start_h, minute=0, second=0, microsecond=0)
-    else:
-        local = local.replace(minute=0, second=0, microsecond=0)
+    # внутри окна — время не трогаем (границы задают только часы окна)
     while local.weekday() >= 5:  # сб/вс → понедельник
         local = (local + dt.timedelta(days=1)).replace(hour=start_h, minute=0, second=0, microsecond=0)
     return local
