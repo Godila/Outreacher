@@ -47,7 +47,8 @@ class TokenManager:
             state.member_id = auth.get("member_id", "")
             if not state.application_token and auth.get("application_token"):
                 state.application_token = auth["application_token"]
-            state.expires_at = utcnow() + dt.timedelta(seconds=expires_in - 60) if expires_in else None
+            # expires_at=None означает «неизвестно» и трактуется как истёкший (безопасный дефолт)
+            state.expires_at = utcnow() + dt.timedelta(seconds=(expires_in - 60) if expires_in else -1)
             await session.commit()
 
     async def _oauth_refresh(self, client_id: str, client_secret: str, refresh_token: str) -> dict:
@@ -70,7 +71,7 @@ class TokenManager:
             state = await self._load_state(session)
             if state is None:
                 raise Bitrix24Error("not_installed", "B24 state not found — установите приложение")
-            if state.expires_at is None or state.expires_at > utcnow():
+            if state.expires_at is not None and state.expires_at > utcnow():
                 return state.portal_domain, state.access_token
             stale_refresh = state.refresh_token
 
@@ -105,7 +106,7 @@ class TokenManager:
                 state.access_token = token_resp["access_token"]
                 state.refresh_token = token_resp.get("refresh_token", state.refresh_token)
                 expires_in = int(token_resp.get("expires_in", 0) or 0)
-                state.expires_at = utcnow() + dt.timedelta(seconds=expires_in - 60) if expires_in else None
+                state.expires_at = utcnow() + dt.timedelta(seconds=(expires_in - 60) if expires_in else -1)
                 await session.commit()
             return state.portal_domain, state.access_token
 
