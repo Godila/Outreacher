@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from sqlalchemy import text
 
 from app.routes.b24hooks import router as b24_router
+from app.routes.unsub import router as unsub_router
 
 
 def create_app(session_factory=None, token_manager=None, settings=None) -> FastAPI:
@@ -12,6 +13,7 @@ def create_app(session_factory=None, token_manager=None, settings=None) -> FastA
     app.state.settings = settings
 
     app.include_router(b24_router)
+    app.include_router(unsub_router)
 
     @app.get("/health")
     async def health() -> dict:
