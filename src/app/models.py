@@ -148,6 +148,7 @@ class B24State(Base):
     refresh_token: Mapped[str] = mapped_column(Text, default="")
     member_id: Mapped[str] = mapped_column(String(64), default="")
     application_token: Mapped[str] = mapped_column(Text, default="")
+    expires_at: Mapped[dt.datetime | None] = mapped_column(DateTime, nullable=True)
     contacts_watermark: Mapped[dt.datetime | None] = mapped_column(DateTime, nullable=True)
     deals_watermark: Mapped[dt.datetime | None] = mapped_column(DateTime, nullable=True)
 
