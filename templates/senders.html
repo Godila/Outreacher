@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Отправители (пул)</h1>
+<table>
+<tr><th>Email</th><th>SMTP</th><th>Лимит/день</th><th>Отправлено сегодня</th><th>Health</th></tr>
+{% for s in items %}
+<tr><td>{{ s.email }}</td><td>{{ s.smtp_host }}</td><td>{{ s.daily_limit }}</td><td>{{ s.sent_today }} ({{ s.sent_date }})</td><td>{{ s.health }}</td></tr>
+{% else %}
+<tr><td colspan="5">Пул пуст.</td></tr>
+{% endfor %}
+</table>
+
+<h2>Добавить ящик</h2>
+<form method="post" action="/senders">
+  <label>Email <input name="email" required placeholder="anna@news.example.ru"></label>
+  <label>Имя в письме <input name="display_name" placeholder="Анна"></label>
+  <label>SMTP host <input name="smtp_host" required placeholder="smtp.beget.com"></label>
+  <label>SMTP user <input name="smtp_user" required></label>
+  <label>SMTP pass <input name="smtp_pass" type="password" required></label>
+  <label>IMAP host <input name="imap_host" required placeholder="imap.beget.com"></label>
+  <label>IMAP user <input name="imap_user" required></label>
+  <label>IMAP pass <input name="imap_pass" type="password" required></label>
+  <label>Лимит/день <input name="daily_limit" type="number" value="50"></label>
+  <button>Добавить</button>
+</form>
+{% endblock %}

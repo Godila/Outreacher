@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Стоп-лист (навсегда)</h1>
+<table>
+<tr><th>Email</th><th>Причина</th><th>С</th></tr>
+{% for s in items %}
+<tr><td>{{ s.email }}</td><td>{{ s.reason }}</td><td>{{ s.created_at }}</td></tr>
+{% else %}
+<tr><td colspan="3">Пусто.</td></tr>
+{% endfor %}
+</table>
+{% endblock %}

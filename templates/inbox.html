@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Инбокс ответов</h1>
+<table>
+<tr><th>Дата</th><th>От</th><th>Класс</th><th>Кем</th><th>Текст</th><th>Разметить</th></tr>
+{% for i in items %}
+<tr class="{{ 'unknown-row' if i.classification == 'unknown' else '' }}">
+  <td>{{ i.received_at }}</td>
+  <td>{{ i.from_email }}</td>
+  <td>{{ i.classification }}</td>
+  <td>{{ i.classified_by }}</td>
+  <td class="snippet">{{ i.body_snippet }}</td>
+  <td>
+    <form method="post" action="/inbox/{{ i.id }}/classify">
+      <select name="classification">
+        <option value="positive">positive</option>
+        <option value="negative">negative</option>
+        <option value="referral">referral</option>
+        <option value="unsub">unsub</option>
+        <option value="ooo">ooo</option>
+      </select>
+      <button>OK</button>
+    </form>
+  </td>
+</tr>
+{% else %}
+<tr><td colspan="6">Ответов пока нет.</td></tr>
+{% endfor %}
+</table>
+{% endblock %}
