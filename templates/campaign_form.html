@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Новая кампания</h1>
+<form method="post" action="/campaigns">
+  <label>Название <input name="name" required></label>
+  <label>Slug (для UTM) <input name="slug" required pattern="[a-z0-9-]+"></label>
+  <label>Тип
+    <select name="type">
+      <option value="reactivation">Реактивация</option>
+      <option value="announce">Анонс</option>
+      <option value="upsell">Допродажа</option>
+      <option value="content">Контент/опрос</option>
+    </select>
+  </label>
+  <label>Сегмент
+    <select name="segment_id">
+      <option value="0">— без сегмента (вручную) —</option>
+      {% for s in segments %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Дневной лимит <input name="daily_cap" type="number" value="100" min="1"></label>
+  <label><input type="checkbox" name="is_advertising"> Пометка «Реклама» (чужие офферы)</label>
+
+  <h3>Шаги секвенции</h3>
+  <input type="hidden" name="step_count" id="step_count" value="2">
+  <div id="steps">
+    {% for i in range(1, 3) %}
+    <fieldset class="step" data-n="{{ i }}">
+      <legend>Шаг {{ i }}</legend>
+      <label>Задержка, раб. дней после пред. <input name="delay_{{ i }}" type="number" value="{{ 0 if i == 1 else 3 }}" min="0"></label>
+      <label>Тема <input name="subject_{{ i }}" style="width:100%" placeholder="{{ '{{first_name}}' }}, ваш {{ '{{last_deal_title}}' }}"></label>
+      <label>Тело (Jinja2: name, first_name, last_deal_title, last_deal_months_ago, deals_count, assigned_manager_name)
+        <textarea name="body_{{ i }}" rows="5" style="width:100%"></textarea></label>
+      <label><input type="checkbox" name="threaded_{{ i }}" checked> Ответом в тот же тред</label>
+    </fieldset>
+    {% endfor %}
+  </div>
+  <button type="button" onclick="addStep()">＋ шаг</button>
+  <button type="submit">Создать</button>
+</form>
+<script>
+let n = 2;
+function addStep() {
+  n += 1;
+  document.getElementById('step_count').value = n;
+  const tpl = document.querySelector('.step').outerHTML
+    .replaceAll('1', n).replaceAll('2', n);
+  const div = document.createElement('div');
+  div.innerHTML = tpl;
+  const fs = div.querySelector('fieldset');
+  fs.querySelector('legend').textContent = 'Шаг ' + n;
+  fs.querySelectorAll('input,textarea').forEach(el => el.value = el.tagName === 'TEXTAREA' ? '' : (el.type === 'number' ? '3' : ''));
+  document.getElementById('steps').appendChild(fs);
+}
+</script>
+{% endblock %}

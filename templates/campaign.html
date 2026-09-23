@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ campaign.name }} <span class="badge">{{ campaign.status }}</span></h1>
+<p>Slug: <code>{{ campaign.slug }}</code> · Тип: {{ campaign.type }} · Лимит/день: {{ campaign.daily_cap }}
+{% if campaign.is_advertising %} · <b>Реклама</b>{% endif %}
+{% if segment %} · Сегмент: <a href="/segments">{{ segment.name }}</a> (в сегменте ~{{ preview_count }}){% endif %}</p>
+
+<form method="post" action="/campaigns/{{ campaign.id }}/status" style="display:inline">
+  {% if campaign.status == 'active' %}
+    <input type="hidden" name="status" value="paused"><button>⏸ Пауза</button>
+  {% else %}
+    <input type="hidden" name="status" value="active"><button>▶ Запустить</button>
+  {% endif %}
+</form>
+{% if segment %}
+<form method="post" action="/campaigns/{{ campaign.id }}/enroll" style="display:inline">
+  <button>Наполнить из сегмента</button>
+</form>
+{% endif %}
+
+<h2>Секвенция</h2>
+<table>
+<tr><th>#</th><th>Задержка</th><th>Тема</th><th>Тред</th></tr>
+{% for s in steps %}
+<tr><td>{{ s.position }}</td><td>{{ s.delay_days }} раб.д.</td><td>{{ s.subject_tpl }}</td><td>{{ 'да' if s.threaded else 'нет' }}</td></tr>
+{% endfor %}
+</table>
+
+<h2>Участники</h2>
+<table>
+<tr><th>Контакт</th><th>Email</th><th>Статус</th><th>Шаг</th><th>Следующая отправка (UTC)</th><th>Причина</th></tr>
+{% for e, c in enrollments %}
+<tr>
+  <td>{{ c.name }}</td><td>{{ c.email }}</td><td>{{ e.status }}</td><td>{{ e.current_step }}</td>
+  <td>{{ e.next_send_at or '—' }}</td><td>{{ e.paused_reason }}</td>
+</tr>
+{% else %}
+<tr><td colspan="6">Пока пусто — наполните из сегмента.</td></tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Кампании</h1>
+<table>
+<tr><th>ID</th><th>Название</th><th>Slug</th><th>Статус</th><th>В кампании</th><th>Отправлено</th><th>Ответили</th><th>Bounce</th></tr>
+{% for r in rows %}
+<tr>
+  <td>{{ r.campaign.id }}</td>
+  <td><a href="/campaigns/{{ r.campaign.id }}">{{ r.campaign.name }}</a></td>
+  <td><code>{{ r.campaign.slug }}</code></td>
+  <td>{{ r.campaign.status }}</td>
+  <td>{{ r.enrolled }}</td>
+  <td>{{ r.sent }}</td>
+  <td>{{ r.replied }}</td>
+  <td>{{ r.bounced }}</td>
+</tr>
+{% else %}
+<tr><td colspan="8">Кампаний пока нет — <a href="/campaigns/new">создайте первую</a>.</td></tr>
+{% endfor %}
+</table>
+{% endblock %}

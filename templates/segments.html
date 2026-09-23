@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Сегменты</h1>
+<table>
+<tr><th>ID</th><th>Название</th><th>Фильтры</th></tr>
+{% for s in segments %}
+<tr><td>{{ s.id }}</td><td>{{ s.name }}</td><td><code>{{ s.filters }}</code></td></tr>
+{% endfor %}
+</table>
+
+<h2>Новый сегмент</h2>
+<form method="post" action="/segments">
+  <label>Название <input name="name" required></label>
+  <label>Фильтры (JSON), например:
+    <code>{"last_deal_days_gte": 180, "deals_count_gte": 1}</code><br>
+    <textarea name="filters_json" rows="3" style="width:100%">{}</textarea></label>
+  <button>Создать</button>
+</form>
+<p>Доступные ключи: <code>last_deal_days_gte</code>, <code>last_deal_days_lte</code>, <code>deals_count_gte</code>, <code>last_deal_amount_gte</code>. Стоп-лист и активные сделки исключаются при наполнении кампании автоматически.</p>
+{% endblock %}
