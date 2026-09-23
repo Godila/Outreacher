@@ -1,0 +1,25 @@
+# Secrets — никогда не коммитить
+docs/secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Env / локальные данные
+.env
+.env.*
+*.sqlite3
+data/
+backups/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
