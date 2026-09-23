@@ -35,7 +35,7 @@ async def test_concurrent_get_client_single_refresh(db_session, monkeypatch):
     # expires_in=0 -> expires_at в прошлом -> нужен refresh
     await tm.install("portal.example.ru", {"access_token": "a0", "refresh_token": "r0", "expires_in": 0})
 
-    _c1, _c2 = await asyncio.gather(tm.get_client(), tm.get_client())
+    _r1, _r2 = await asyncio.gather(tm._ensure_access(), tm._ensure_access())
     assert state["calls"] == 1  # один refresh под локом
 
     fresh = await db_session.get(B24State, 1)
