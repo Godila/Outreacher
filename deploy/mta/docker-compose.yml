@@ -4,9 +4,9 @@ services:
     container_name: dms
     hostname: mta-news.adel-factory.ru
     ports:
-      - "25:25"      # SMTP: приём входящих ответов/bounce + ретрансляция наружу
-      - "127.0.0.1:587:587"  # submission (доступ снаружи ограничен ufw до VM-APP)
-      - "127.0.0.1:993:993"  # IMAPS (аналогично)
+      - "25:25"    # SMTP: приём входящих ответов/bounce + отправка наружу
+      - "587:587"  # submission (доступ извне ограничен ufw: только VM-APP)
+      - "993:993"  # IMAPS (аналогично)
     volumes:
       - ./docker-data/dms/mail-data/:/var/mail/
       - ./docker-data/dms/mail-state/:/var/mail-state/

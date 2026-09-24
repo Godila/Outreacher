@@ -1,27 +1,32 @@
-"""Одноразовый SSH-хелпер деплоя: python deploy_ssh.py "команда" — пароль из docs/secrets/VM_Beget.txt"""
+"""SSH-хелпер деплоя: python deploy_ssh.py <host|all> "команда" — пароли из docs/secrets/VM_*.txt"""
 
 import re
 import sys
+from pathlib import Path
 
 import paramiko
 
-HOST = "45.84.226.80"
 USER = "root"
 
 
-def read_password() -> str:
-    text = open("docs/secrets/VM_Beget.txt", encoding="utf-8").read()
-    m = re.search(r"Пароль:\s*(\S+)", text)
-    if not m:
-        raise SystemExit("password not found in docs/secrets/VM_Beget.txt")
-    return m.group(1)
+def read_password(host: str) -> str:
+    for path in Path("docs/secrets").glob("VM_*.txt"):
+        text = path.read_text(encoding="utf-8")
+        if host in text:
+            # берём пароль из блока, где упоминается этот IP
+            block = text.split(host, 1)[1][:200]
+            m = re.search(r"Пароль:\s*(\S+)", block)
+            if m:
+                return m.group(1)
+    raise SystemExit(f"password for {host} not found in docs/secrets/VM_*.txt")
 
 
 def main() -> None:
-    command = sys.argv[1]
+    host = sys.argv[1]
+    command = sys.argv[2]
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(HOST, username=USER, password=read_password(), timeout=20, look_for_keys=False, allow_agent=False)
+    client.connect(host, username=USER, password=read_password(host), timeout=20, look_for_keys=False, allow_agent=False)
     try:
         _stdin, stdout, stderr = client.exec_command(command, timeout=600)
         out = stdout.read().decode("utf-8", "replace")
